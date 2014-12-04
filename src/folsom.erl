@@ -61,5 +61,11 @@ configure({K, New}) ->
 
 configure_metric(New, Spec) when is_list(Spec) ->
     apply(folsom_metrics, New, Spec);
-configure_metric(New, Name) ->
-    folsom_metrics:New(Name).
+configure_metric(New, Spec) ->
+    case Spec of
+        {Name, Tags} ->
+            folsom_metrics:New(Name),
+            [folsom_metrics:tag_metric(Name, Tag) || Tag <- Tags];
+        Name ->
+            folsom_metrics:New(Name)
+    end.
